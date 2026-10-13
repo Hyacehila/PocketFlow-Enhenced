@@ -1,4 +1,7 @@
-import asyncio, warnings, copy, time
+import asyncio, warnings, copy, time, contextvars
+
+# Immutable frames (node, retry index, parent) keep each async call isolated.
+_async_retry = contextvars.ContextVar("pocketflow_async_retry", default=None)
 
 class BaseNode:
     def __init__(self): self.params,self.successors={},{}
@@ -57,16 +60,33 @@ class BatchFlow(Flow):
         return self.post(shared,pr,None)
 
 class AsyncNode(Node):
+    @property
+    def cur_retry(self):
+        state = _async_retry.get()
+        while state is not None:
+            node, retry_index, state = state
+            if node is self: return retry_index
+        return 0
+    @cur_retry.setter
+    def cur_retry(self,value):
+        state = _async_retry.get()
+        parent = state[2] if state is not None and state[0] is self else state
+        _async_retry.set((self,value,parent))
     async def prep_async(self,shared): pass
     async def exec_async(self,prep_res): pass
     async def exec_fallback_async(self,prep_res,exc): raise exc
     async def post_async(self,shared,prep_res,exec_res): pass
-    async def _exec(self,prep_res): 
-        for self.cur_retry in range(self.max_retries):
-            try: return await self.exec_async(prep_res)
-            except Exception as e:
-                if self.cur_retry==self.max_retries-1: return await self.exec_fallback_async(prep_res,e)
-                if self.wait>0: await asyncio.sleep(self.wait)
+    async def _exec(self,prep_res):
+        token = _async_retry.set((self,0,_async_retry.get()))
+        try:
+            for retry_index in range(self.max_retries):
+                self.cur_retry = retry_index
+                try: return await self.exec_async(prep_res)
+                except Exception as e:
+                    if retry_index==self.max_retries-1: return await self.exec_fallback_async(prep_res,e)
+                    if self.wait>0: await asyncio.sleep(self.wait)
+        finally:
+            _async_retry.reset(token)
     async def run_async(self,shared): 
         if self.successors: warnings.warn("Node won't run successors. Use AsyncFlow.")  
         return await self._run_async(shared)
