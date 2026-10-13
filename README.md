@@ -12,7 +12,7 @@ English | [中文](https://github.com/The-Pocket/PocketFlow/blob/main/cookbook/p
     <img src="https://img.shields.io/discord/1346833819172601907?logo=discord&style=flat">
 </a>
 
-Pocket Flow is a [100-line](https://github.com/The-Pocket/PocketFlow/blob/main/pocketflow/__init__.py) minimalist LLM framework.And this is an enhenced version. We will break the 100 lines rules and make it better for you.
+Pocket Flow is a [100-line](https://github.com/The-Pocket/PocketFlow/blob/main/pocketflow/__init__.py) minimalist LLM framework
 
 - **Lightweight**: Just 100 lines. Zero bloat, zero dependencies, zero vendor lock-in.
   
@@ -20,10 +20,30 @@ Pocket Flow is a [100-line](https://github.com/The-Pocket/PocketFlow/blob/main/p
 
 - **[Agentic Coding](https://zacharyhuang.substack.com/p/agentic-coding-the-most-fun-way-to)**: Let AI Agents (e.g., Cursor AI) build Agents—10x productivity boost!
 
-To adhere to the commitment of keeping the codebase within 100 lines, Pocketflow retains only the essential structural framework without offering any wrapped functional implementations. Nevertheless, a moderate level of encapsulation can be beneficial for more efficient development, provided that developers understand what they are encapsulating and their intended use. 
+Get started with Pocket Flow:
+- To install, ```pip install pocketflow```or just copy the [source code](https://github.com/The-Pocket/PocketFlow/blob/main/pocketflow/__init__.py) (only 100 lines).
+- To learn more, check out the [video tutorial](https://youtu.be/0Zr3NwcvpA0) and [documentation](https://the-pocket.github.io/PocketFlow/)
+- 🎉 Join our [Discord](https://discord.gg/hUHHE9Sa6T) to connect with other developers building with Pocket Flow!
+- 🎉 Pocket Flow now has [Typescript](https://github.com/The-Pocket/PocketFlow-Typescript), [Java](https://github.com/The-Pocket/PocketFlow-Java), [C++](https://github.com/The-Pocket/PocketFlow-CPP), [Go](https://github.com/The-Pocket/PocketFlow-Go), [Rust](https://github.com/The-Pocket/PocketFlow-Rust) and [PHP](https://github.com/The-Pocket/PocketFlow-PHP) versions!
 
-This is an individual’s enhanced version of the Pocketflow-PythonSDK, incorporating elements that I deem useful but could potentially increase the line count, such as wrappers for RAG . This project is a direct fork of the original SDK, with only minimal alterations to the README file to describe the additional features I’ve implemented and the removal of superfluous content. Hope it could help you to build your own PocketFlow.
+## Why Pocket Flow?
 
+Current LLM frameworks are bloated... You only need 100 lines for LLM Framework!
+
+<div align="center">
+  <img src="https://github.com/The-Pocket/.github/raw/main/assets/meme.jpg" width="400"/>
+
+
+  |                | **Abstraction**          | **App-Specific Wrappers**                                      | **Vendor-Specific Wrappers**                                    | **Lines**       | **Size**    |
+|----------------|:-----------------------------: |:-----------------------------------------------------------:|:------------------------------------------------------------:|:---------------:|:----------------------------:|
+| LangChain  | Agent, Chain               | Many <br><sup><sub>(e.g., QA, Summarization)</sub></sup>              | Many <br><sup><sub>(e.g., OpenAI, Pinecone, etc.)</sub></sup>                   | 405K          | +166MB                     |
+| CrewAI     | Agent, Chain            | Many <br><sup><sub>(e.g., FileReadTool, SerperDevTool)</sub></sup>         | Many <br><sup><sub>(e.g., OpenAI, Anthropic, Pinecone, etc.)</sub></sup>        | 18K           | +173MB                     |
+| SmolAgent   | Agent                      | Some <br><sup><sub>(e.g., CodeAgent, VisitWebTool)</sub></sup>         | Some <br><sup><sub>(e.g., DuckDuckGo, Hugging Face, etc.)</sub></sup>           | 8K            | +198MB                     |
+| LangGraph   | Agent, Graph           | Some <br><sup><sub>(e.g., Semantic Search)</sub></sup>                     | Some <br><sup><sub>(e.g., PostgresStore, SqliteSaver, etc.) </sub></sup>        | 37K           | +51MB                      |
+| AutoGen    | Agent                | Some <br><sup><sub>(e.g., Tool Agent, Chat Agent)</sub></sup>              | Many <sup><sub>[Optional]<br> (e.g., OpenAI, Pinecone, etc.)</sub></sup>        | 7K <br><sup><sub>(core-only)</sub></sup>    | +26MB <br><sup><sub>(core-only)</sub></sup>          |
+| **PocketFlow** | **Graph**                    | **None**                                                 | **None**                                                  | **100**       | **+56KB**                  |
+
+</div>
 
 ## How does Pocket Flow work?
 
@@ -72,6 +92,17 @@ From there, it's easy to implement popular design patterns like ([Multi-](https:
 | [FastAPI WebSocket](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-fastapi-websocket) | ★☆☆ <sup>*Beginner*</sup> | Real-time chat interface with streaming LLM responses via WebSocket |
 | [FastAPI Background](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-fastapi-background) | ★☆☆ <sup>*Beginner*</sup> | FastAPI app with background jobs and real-time progress via SSE |
 | [Voice Chat](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-voice-chat) | ★☆☆ <sup>*Beginner*</sup> | An interactive voice chat application with VAD, STT, LLM, and TTS. |
+| [Judge](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-judge) | ★☆☆ <sup>*Beginner*</sup> | LLM-as-Judge evaluator-optimizer loop for iterative content refinement |
+| [Debate](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-debate) | ★☆☆ <sup>*Beginner*</sup> | Adversarial reasoning with two advocates and an impartial judge |
+| [Agentic RAG](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-agentic-rag) | ★☆☆ <sup>*Beginner*</sup> | Agent-driven RAG that decides which documents to read |
+| [Self-Healing Mermaid](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-self-healing-mermaid) | ★☆☆ <sup>*Beginner*</sup> | Generate Mermaid diagrams with automatic error recovery |
+| [Heartbeat](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-heartbeat) | ★☆☆ <sup>*Beginner*</sup> | ClawBot-like always-on periodic monitoring with nested flows |
+| [Lead Generation](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-lead-generation) | ★★☆ <sup>*Intermediate*</sup> | Sales pipeline: scrape, enrich, score, and personalize emails |
+| [Newsletter](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-newsletter) | ★★☆ <sup>*Intermediate*</sup> | AI newsletter curation: search, filter, summarize, and format |
+| [Invoice Processing](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-invoice) | ★★☆ <sup>*Intermediate*</sup> | Extract and validate invoice data from PDFs using vision |
+| [NotebookLM](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-notebook-lm) | ★★☆ <sup>*Intermediate*</sup> | Turn documents into a podcast with two AI hosts |
+| [Deep Research](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-deep-research) | ★★☆ <sup>*Intermediate*</sup> | Recursive map-reduce research with iterative refinement |
+| [Coding Agent](https://github.com/The-Pocket/PocketFlow/tree/main/cookbook/pocketflow-coding-agent) | ★★★ <sup>*Advanced*</sup> | Production coding agent with 6 tools, memory, and patch-as-subflow |
 
 </div>
 
@@ -104,11 +135,12 @@ From there, it's easy to implement popular design patterns like ([Multi-](https:
 | [Cold Opener Generator](https://github.com/The-Pocket/Tutorial-Cold-Email-Personalization)  <br> <sup><sub> Instant icebreakers that turn cold leads hot </sup></sub> | ★☆☆ <br> *Beginner*   | [Map Reduce](https://the-pocket.github.io/PocketFlow/design_pattern/mapreduce.html) <br> [Web Search](https://the-pocket.github.io/PocketFlow/utility_function/websearch.html) |  [Design Doc](https://github.com/The-Pocket/Tutorial-Cold-Email-Personalization/blob/master/docs/design.md) | [Flow Code](https://github.com/The-Pocket/Tutorial-Cold-Email-Personalization/blob/master/flow.py)
 
 
-## What Changed
+</div>
 
-- Added built-in flow visualization API: `Flow.visualize(...)`.
-- Mermaid export now supports nested flows, branch action labels, configurable direction, default-edge labeling, and start-node highlighting.
-- Added automated visualization regression tests in `unittest` style.
-- Added user documentation: [Flow Visualize Guide](docs/utility_function/flow_visualize.md).
+- Want to learn **Agentic Coding**?
+
+  - Check out [my YouTube](https://www.youtube.com/@ZacharyLLM?sub_confirmation=1) for video tutorial on how some apps above are made!
+
+  - Want to build your own LLM App? Read this [post](https://zacharyhuang.substack.com/p/agentic-coding-the-most-fun-way-to)! Start with [this template](https://github.com/The-Pocket/PocketFlow-Template-Python)!
 
 

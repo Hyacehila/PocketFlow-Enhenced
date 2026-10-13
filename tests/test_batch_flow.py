@@ -180,5 +180,48 @@ class TestBatchFlow(unittest.TestCase):
         }
         self.assertEqual(shared_storage['results'], expected_results)
 
+    def test_nested_batch_flow(self):
+        """Test BatchFlow nested inside another BatchFlow (outer iterates groups, inner iterates items)"""
+        class ItemNode(Node):
+            def prep(self, shared_storage):
+                return shared_storage['groups'][self.params['group']][self.params['item']]
+            def exec(self, prep_res):
+                return prep_res * 2
+            def post(self, shared_storage, prep_res, exec_res):
+                group = self.params['group']
+                if 'results' not in shared_storage:
+                    shared_storage['results'] = {}
+                if group not in shared_storage['results']:
+                    shared_storage['results'][group] = []
+                shared_storage['results'][group].append(exec_res)
+
+        class InnerBatchFlow(BatchFlow):
+            def prep(self, shared_storage):
+                group = self.params['group']
+                return [{'item': i, 'group': group} for i in range(len(shared_storage['groups'][group]))]
+
+        class OuterBatchFlow(BatchFlow):
+            def prep(self, shared_storage):
+                return [{'group': g} for g in shared_storage['groups']]
+
+        item_node = ItemNode()
+        inner_flow = InnerBatchFlow(start=item_node)
+        outer_flow = OuterBatchFlow(start=inner_flow)
+
+        shared_storage = {
+            'groups': {
+                'A': [1, 2],
+                'B': [3, 4],
+            }
+        }
+
+        outer_flow.run(shared_storage)
+
+        expected = {
+            'A': [2, 4],
+            'B': [6, 8],
+        }
+        self.assertEqual(shared_storage['results'], expected)
+
 if __name__ == '__main__':
     unittest.main()

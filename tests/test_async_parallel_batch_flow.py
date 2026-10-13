@@ -156,5 +156,58 @@ class TestAsyncParallelBatchFlow(unittest.TestCase):
         expected_total = sum(num * 2 for batch in shared_storage['batches'] for num in batch)
         self.assertEqual(shared_storage['total'], expected_total)
 
+class AsyncItemNode(AsyncNode):
+    async def prep_async(self, shared_storage):
+        return shared_storage['groups'][self.params['group']][self.params['item']]
+    async def exec_async(self, prep_res):
+        return prep_res * 2
+    async def post_async(self, shared_storage, prep_res, exec_res):
+        group = self.params['group']
+        if 'results' not in shared_storage:
+            shared_storage['results'] = {}
+        if group not in shared_storage['results']:
+            shared_storage['results'][group] = []
+        shared_storage['results'][group].append(exec_res)
+
+class InnerAsyncParallelBatchFlow(AsyncParallelBatchFlow):
+    async def prep_async(self, shared_storage):
+        group = self.params['group']
+        return [{'item': i, 'group': group} for i in range(len(shared_storage['groups'][group]))]
+
+class OuterAsyncParallelBatchFlow(AsyncParallelBatchFlow):
+    async def prep_async(self, shared_storage):
+        return [{'group': g} for g in shared_storage['groups']]
+
+class TestNestedAsyncParallelBatchFlow(unittest.TestCase):
+    def setUp(self):
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+
+    def tearDown(self):
+        self.loop.close()
+
+    def test_nested_parallel_batch_flow(self):
+        """Test AsyncParallelBatchFlow nested inside another (same structure as sync test)"""
+        item_node = AsyncItemNode()
+        inner_flow = InnerAsyncParallelBatchFlow(start=item_node)
+        outer_flow = OuterAsyncParallelBatchFlow(start=inner_flow)
+
+        shared_storage = {
+            'groups': {
+                'A': [1, 2],
+                'B': [3, 4],
+            }
+        }
+
+        self.loop.run_until_complete(outer_flow.run_async(shared_storage))
+
+        expected = {
+            'A': [2, 4],
+            'B': [6, 8],
+        }
+        self.assertEqual(sorted(shared_storage['results'].keys()), sorted(expected.keys()))
+        for group in expected:
+            self.assertCountEqual(shared_storage['results'][group], expected[group])
+
 if __name__ == '__main__':
     unittest.main()

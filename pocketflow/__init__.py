@@ -50,10 +50,6 @@ class Flow(BaseNode):
     def _run(self,shared): p=self.prep(shared); o=self._orch(shared); return self.post(shared,p,o)
     def post(self,shared,prep_res,exec_res): return exec_res
 
-    def visualize(self,namespace: dict,*,direction: str="LR",show_default: bool=False,highlight_starts: bool=True,max_nodes: int=1000)->str:
-        from .mermaid import visualize as _visualize
-        return _visualize(self,namespace,direction=direction,show_default=show_default,highlight_starts=highlight_starts,max_nodes=max_nodes)
-
 class BatchFlow(Flow):
     def _run(self,shared):
         pr=self.prep(shared) or []
