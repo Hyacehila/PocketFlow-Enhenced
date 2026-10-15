@@ -28,7 +28,7 @@ Get started with Pocket Flow:
 
 ## Personal SDK fixes
 
-This personal fork fixes shared retry state in async parallel batches, referencing [upstream PR #148](https://github.com/The-Pocket/PocketFlow/pull/148). The fix uses a local attempt counter, context-local retry state, and restoration after nested calls, failures, or cancellation. See [Async Parallel Retry Fix](docs/fixes/async-parallel-retry-isolation.md) for the bug, compatibility notes, and verification. To use this fork's fix, run `python -m pip install -e .` from this checkout.
+This personal fork fixes shared retry state in async parallel batches, referencing [upstream PR #148](https://github.com/The-Pocket/PocketFlow/pull/148). The fix uses a local attempt counter, context-local retry state, and restoration after nested calls, failures, or cancellation. Retry snapshots use weak references and replace old entries on assignment, allowing nodes to be collected without accumulating assignment history. See [Async Parallel Retry Fix](docs/fixes/async-parallel-retry-isolation.md) for the bug, compatibility notes, and verification. To use this fork's fix, run `python -m pip install -e .` from this checkout.
 
 ## Why Pocket Flow?
 

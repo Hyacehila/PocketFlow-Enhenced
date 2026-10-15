@@ -1,7 +1,12 @@
-import asyncio, warnings, copy, time, contextvars
+import asyncio, warnings, copy, time, contextvars, weakref
 
-# Immutable frames (node, retry index, parent) keep each async call isolated.
-_async_retry = contextvars.ContextVar("pocketflow_async_retry", default=None)
+# Immutable snapshots keep contexts isolated without retaining nodes or old writes.
+_async_retry = contextvars.ContextVar("pocketflow_async_retry", default=())
+
+def _set_async_retry(node,retry_index):
+    state = tuple((ref, index) for ref, index in _async_retry.get()
+                  if ref() is not None and ref() is not node)
+    return _async_retry.set(((weakref.ref(node),retry_index),) + state)
 
 class BaseNode:
     def __init__(self): self.params,self.successors={},{}
@@ -62,22 +67,18 @@ class BatchFlow(Flow):
 class AsyncNode(Node):
     @property
     def cur_retry(self):
-        state = _async_retry.get()
-        while state is not None:
-            node, retry_index, state = state
-            if node is self: return retry_index
+        for node_ref, retry_index in _async_retry.get():
+            if node_ref() is self: return retry_index
         return 0
     @cur_retry.setter
     def cur_retry(self,value):
-        state = _async_retry.get()
-        parent = state[2] if state is not None and state[0] is self else state
-        _async_retry.set((self,value,parent))
+        _set_async_retry(self,value)
     async def prep_async(self,shared): pass
     async def exec_async(self,prep_res): pass
     async def exec_fallback_async(self,prep_res,exc): raise exc
     async def post_async(self,shared,prep_res,exec_res): pass
     async def _exec(self,prep_res):
-        token = _async_retry.set((self,0,_async_retry.get()))
+        token = _set_async_retry(self,0)
         try:
             for retry_index in range(self.max_retries):
                 self.cur_retry = retry_index
